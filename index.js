@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const path = require("path");
-const methodOverride =require("method-override");
+const methodOverride = require("method-override");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -46,58 +46,70 @@ app.get("/user", (req, res) => {
   try {
     connection.query(q, (err, result) => {
       if (err) throw err;
-      let results=result;
-      res.render("format.ejs",{results});
+      let results = result;
+      res.render("format.ejs", { results });
     });
   } catch (err) {
     console.log("Cought some error in data base...");
   }
 });
-app.get("/user/:id/edit",(req,res)=>{
-  let {id} = req.params;
+app.get("/user/:id/edit", (req, res) => {
+  let { id } = req.params;
   let q = `SELECT * FROM user WHERE id = '${id}'`;
   try {
     connection.query(q, (err, result) => {
       if (err) throw err;
-      let user=result[0];
+      let user = result[0];
       console.log(user);
-      res.render("edit.ejs",{user});
+      res.render("edit.ejs", { user });
     });
-    } catch (err) {
-      console.log("Cought some error in data base...");
-      }
+  } catch (err) {
+    console.log("Cought some error in data base...");
+  }
 });
-app.patch("/user/:id",(req,res)=>{
-  let {id} = req.params;
-  let {password:formPassword ,username:newUsername}=req.body;
+app.patch("/user/:id", (req, res) => {
+  let { id } = req.params;
+  let { password: formPassword, username: newUsername } = req.body;
   let q = `SELECT * FROM user WHERE id = '${id}'`;
   try {
     connection.query(q, (err, result) => {
       if (err) throw err;
-      let user=result[0];
+      let user = result[0];
       // console.log(formPassword);
       // console.log(user.password);
-      if(formPassword != user.password){
+      if (formPassword != user.password) {
         res.send("Password is not correct");
-      }
-      else{
+      } else {
         let q2 = `UPDATE user SET username = '${newUsername}' WHERE id = '${id}'`;
-        try{
+        try {
           connection.query(q2, (err, result) => {
             if (err) throw err;
             res.redirect("/user");
-            });
-        }catch(err){
+          });
+        } catch (err) {
           console.log("Cought some error in data base...");
         }
       }
-      });
-    }catch(err){
-      console.log("Cought some error in data base...");
-    }
+    });
+  } catch (err) {
+    console.log("Cought some error in data base...");
+  }
 });
-
-
+app.get("/user/new", (req, res) => {
+  res.render("new.ejs");
+});
+app.post("/user", (req, res) => {
+  let { id, username, email, password } = req.body;
+  let q = `INSERT INTO user (id,username,email,password) VALUES (?,?,?,?)`;
+  try {
+    connection.query(q,[id,username,email,password], (err, result) => {
+      if (err) throw err;
+      res.redirect("/user");
+    });
+  } catch (err) {
+    res.send("Cought some error in data base...");
+  }
+});
 
 app.listen(port, () => {
   console.log(`app listen to the port ${port}`);
