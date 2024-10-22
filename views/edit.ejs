@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit user info</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <h1>Edit user onformation</h1>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>username</th>
+            <th>email</th>
+        </tr>
+        <tr>
+            <td>
+                <%=user.id%>
+            </td>
+            <td>
+                <%=user.username%>
+            </td>
+            <td>
+                <%=user.email%>
+            </td>
+        </tr>
+    </table>
+    <br><br>
+    <form method="post" action="/user/<%=user.id%>?_method=PATCH">
+        <textarea name="username" placeholder="Edit you'r username"></textarea>
+        <br>
+        <p>Password: <input type="password" placeholder="Enter your password" name="password"></p>
+        <button>Submit</button>
+    </form>
+</body>
+
+</html>
