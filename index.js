@@ -110,13 +110,37 @@ app.post("/user", (req, res) => {
     res.send("Cought some error in data base...");
   }
 });
-app.delete("/user/:id",(req,res)=>{
+app.get("/user/:id/delete",(req,res)=>{
   let { id } = req.params;
-  let q = `DELETE FROM user WHERE id = '${id}'`;
+  let q = `SELECT * FROM user WHERE id = '${id}'`
   try {
     connection.query(q, (err, result) => {
       if (err) throw err;
-      res.redirect("/user");
+      let user = result[0];
+      res.render("delete.ejs",{user});
+      });
+      } catch (err) {
+        console.log("Cought some error in data base...");
+        }
+});
+app.delete("/user/:id/",(req,res)=>{
+  let { id } = req.params;
+  let { email:formEmail,password:formPassword } = req.body;
+  let q = `SELECT * FROM user WHERE id = '${id}'`;
+  try {
+    connection.query(q, (err, result) => {
+      if (err) throw err;
+      let user=result[0];
+      console.log(user);
+      if(formEmail !=user.email && formPassword != user.password){
+        res.send("You are not authorized to delete this user bcz your password or email wrong");
+      }else{
+        let q = `DELETE FROM user WHERE id = '${id}'`
+        connection.query(q, (err, result) => {
+          if (err) throw err;
+          res.redirect("/user");
+          });
+      }
     });
   }catch(err){
     res.send("Cought some error in data base...");
